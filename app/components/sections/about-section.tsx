@@ -10,14 +10,6 @@ export function AboutSection() {
     { icon: <Users className="h-4 w-4" />, title: "Collaboration", desc: "Méthodologies agiles" }
   ]
 
-  const scrollToSection = (sectionId: string) => {
-    if (typeof window !== 'undefined') {
-      const element = document.querySelector(sectionId)
-      if (element) {
-        element.scrollIntoView({ behavior: 'smooth' })
-      }
-    }
-  }
 
   return (
     <section id="apropos" className="relative min-h-screen flex items-end justify-center px-4 lg:px-6 py-8 lg:py-12 pt-24 lg:pt-32 pb-16 lg:pb-20 overflow-hidden bg-gradient-to-b from-blue-50/30 via-gray-50/50 to-white dark:from-blue-950/20 dark:via-gray-900/50 dark:to-gray-950">

@@ -96,7 +96,7 @@ export default function SkillsPage(): React.JSX.Element {
   }
 
   return (
-    <section id="skills" className="min-h-screen flex flex-col px-4 lg:px-8 pt-24 pb-8 bg-gradient-to-b from-blue-50/30 via-gray-50/50 to-white dark:from-blue-950/20 dark:via-gray-900/50 dark:to-gray-950">
+    <section id="skills" className="relative min-h-screen flex items-end justify-center px-4 lg:px-6 py-8 lg:py-12 pt-24 lg:pt-32 pb-16 lg:pb-20 overflow-hidden bg-gradient-to-b from-white via-gray-50/50 to-blue-50/30 dark:from-gray-950 dark:via-gray-900/50 dark:to-blue-950/20">
       
       {/* Background Elements */}
       <div className="absolute inset-0 pointer-events-none">
@@ -110,31 +110,31 @@ export default function SkillsPage(): React.JSX.Element {
         <div className="absolute top-1/2 left-1/3 w-1 h-1 bg-purple-300/40 dark:bg-purple-400/30 rounded-full"></div>
       </div>
 
-      <div className="relative max-w-7xl mx-auto z-10 flex flex-col h-full">
+      <div className="relative max-w-6xl mx-auto z-10 w-full mb-8 lg:mb-0">
         
         {/* Header Compact */}
         <div className="text-center mb-6">
           <div className="flex items-center justify-center gap-3 mb-4">
-            <div className="w-8 h-1 bg-gradient-to-r from-blue-500 to-violet-500 rounded-full"></div>
-            <span className="text-xs font-bold text-blue-600 dark:text-blue-400 tracking-wider uppercase px-3 py-1 bg-blue-50/50 dark:bg-blue-900/30 rounded-full border border-blue-200/50 dark:border-blue-700/50">
-              Arsenal Technologique
+            <div className="w-6 lg:w-8 h-[2px] bg-gradient-to-r from-blue-600 to-violet-600 rounded-full"></div>
+            <span className="text-xs lg:text-sm font-medium text-blue-600 dark:text-blue-400 tracking-wider uppercase">
+              Mes Compétences
             </span>
-            <div className="w-8 h-1 bg-gradient-to-r from-violet-500 to-purple-500 rounded-full"></div>
+            <div className="w-6 lg:w-8 h-[2px] bg-gradient-to-r from-blue-600 to-violet-600 rounded-full"></div>
           </div>
           
           <h1 className="text-3xl lg:text-4xl font-bold mb-3 tracking-tight">
             <span className="bg-gradient-to-r from-blue-600 via-violet-600 to-purple-600 dark:from-blue-400 dark:via-violet-400 dark:to-purple-400 bg-clip-text text-transparent">
-              Compétences Techniques
+              Technologies & Outils
             </span>
           </h1>
           <p className="text-gray-600 dark:text-gray-300 text-base max-w-xl mx-auto">
-            Technologies maîtrisées pour créer des solutions innovantes
+            Technologies que j'utilise pour créer des applications web modernes et performantes
           </p>
         </div>
 
         {/* Category Navigation Compact */}
-        <div className="mb-8">
-          <div className="flex flex-wrap justify-center gap-3">
+        <div className="mb-6">
+          <div className="flex flex-wrap justify-center gap-2">
             {categories.map((category) => {
               const Icon = category.icon
               const isActive = activeCategory === category.id
@@ -143,17 +143,17 @@ export default function SkillsPage(): React.JSX.Element {
                 <button
                   key={category.id}
                   onClick={() => setActiveCategory(category.id)}
-                  className={`group relative flex items-center gap-3 px-5 py-3 rounded-xl font-medium text-sm transition-all duration-300 border ${
+                  className={`group relative flex items-center gap-2 px-3 py-2 rounded-lg font-medium text-xs transition-all duration-300 border ${
                     isActive 
                       ? 'bg-white/80 dark:bg-gray-900/80 text-blue-600 dark:text-blue-400 shadow-xl border-white/40 dark:border-gray-800/40 scale-105' 
                       : 'bg-white/60 dark:bg-gray-900/60 hover:bg-white/80 dark:hover:bg-gray-900/80 text-gray-600 dark:text-gray-300 hover:text-blue-600 dark:hover:text-blue-400 shadow-md hover:shadow-lg border-white/30 dark:border-gray-800/30 hover:scale-105'
                   }`}
                 >
-                  <div className={`p-2 rounded-lg bg-gradient-to-r ${category.color} text-white transition-transform duration-300 ${isActive ? 'scale-110' : 'group-hover:scale-110'}`}>
-                    <Icon className="h-4 w-4" />
+                  <div className={`p-1.5 rounded-md bg-gradient-to-r ${category.color} text-white transition-transform duration-300 ${isActive ? 'scale-110' : 'group-hover:scale-110'}`}>
+                    <Icon className="h-3 w-3" />
                   </div>
-                  <span className="text-sm">{category.name}</span>
-                  <div className={`px-2 py-1 rounded-full text-xs font-medium bg-gray-100/80 dark:bg-gray-800/80 text-gray-600 dark:text-gray-300 ${isActive ? 'bg-blue-100/80 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400' : ''}`}>
+                  <span className="text-xs">{category.name}</span>
+                  <div className={`px-1.5 py-0.5 rounded-full text-xs font-medium bg-gray-100/80 dark:bg-gray-800/80 text-gray-600 dark:text-gray-300 ${isActive ? 'bg-blue-100/80 dark:bg-blue-950/50 text-blue-600 dark:text-blue-400' : ''}`}>
                     {category.count}
                   </div>
                 </button>
@@ -162,48 +162,43 @@ export default function SkillsPage(): React.JSX.Element {
           </div>
         </div>
 
-        {/* Main Content - Technologies centées */}
-        <div className="flex-1 flex justify-center">
-          
-          {/* Technologies Grid - Centrée */}
-          <div className="max-w-5xl w-full">
-            <div className="flex flex-wrap justify-center gap-4">
-              {getFilteredTechnologies().map((tech, index) => (
-                <div
-                  key={tech.name}
-                  className="group bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm rounded-xl p-4 hover:bg-white/90 dark:hover:bg-gray-900/90 transition-all duration-300 hover:scale-105 hover:-translate-y-1 shadow-xl hover:shadow-2xl border border-white/40 dark:border-gray-800/40 relative overflow-hidden w-24 sm:w-28"
-                  style={{ animationDelay: `${index * 30}ms` }}
-                >
-                  {/* Gradient overlay on hover */}
-                  <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-violet-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-xl"></div>
-                  
-                  {/* Logo Container */}
-                  <div className="relative z-10 flex justify-center mb-3">
-                    <div className="p-2 bg-gray-50/80 dark:bg-gray-800/60 rounded-lg group-hover:bg-blue-50/80 dark:group-hover:bg-blue-950/60 transition-all duration-300">
-                      <img
-                        src={tech.logo}
-                        alt={tech.name}
-                        className="w-8 h-8 group-hover:scale-110 transition-transform duration-300"
-                        onError={handleImageError}
-                      />
-                      {/* Fallback */}
-                      <div className="w-8 h-8 bg-gradient-to-br from-blue-500 to-purple-600 rounded-md flex items-center justify-center text-white font-bold text-xs hidden">
-                        {tech.name.charAt(0)}
-                      </div>
+        {/* Technologies Grid - Plus compact pour tenir dans l'écran */}
+        <div className="max-w-4xl mx-auto">
+          <div className="flex flex-wrap justify-center gap-3">
+            {getFilteredTechnologies().map((tech, index) => (
+              <div
+                key={tech.name}
+                className="group bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm rounded-lg p-3 hover:bg-white/90 dark:hover:bg-gray-900/90 transition-all duration-300 hover:scale-105 hover:-translate-y-1 shadow-lg hover:shadow-xl border border-white/40 dark:border-gray-800/40 relative overflow-hidden w-20 sm:w-22"
+                style={{ animationDelay: `${index * 20}ms` }}
+              >
+                {/* Gradient overlay on hover */}
+                <div className="absolute inset-0 bg-gradient-to-br from-blue-500/5 via-violet-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-lg"></div>
+                
+                {/* Logo Container */}
+                <div className="relative z-10 flex justify-center mb-2">
+                  <div className="p-1.5 bg-gray-50/80 dark:bg-gray-800/60 rounded-md group-hover:bg-blue-50/80 dark:group-hover:bg-blue-950/60 transition-all duration-300">
+                    <img
+                      src={tech.logo}
+                      alt={tech.name}
+                      className="w-6 h-6 group-hover:scale-110 transition-transform duration-300"
+                      onError={handleImageError}
+                    />
+                    {/* Fallback */}
+                    <div className="w-6 h-6 bg-gradient-to-br from-blue-500 to-purple-600 rounded flex items-center justify-center text-white font-bold text-xs hidden">
+                      {tech.name.charAt(0)}
                     </div>
                   </div>
-                  
-                  {/* Tech Name */}
-                  <div className="relative z-10 text-center">
-                    <h4 className="text-sm font-bold text-gray-900 dark:text-gray-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300 leading-tight">
-                      {tech.name}
-                    </h4>
-                  </div>
                 </div>
-              ))}
-            </div>
+                
+                {/* Tech Name */}
+                <div className="relative z-10 text-center">
+                  <h4 className="text-xs font-bold text-gray-900 dark:text-gray-100 group-hover:text-blue-600 dark:group-hover:text-blue-400 transition-colors duration-300 leading-tight">
+                    {tech.name}
+                  </h4>
+                </div>
+              </div>
+            ))}
           </div>
-
         </div>
       </div>
     </section>
