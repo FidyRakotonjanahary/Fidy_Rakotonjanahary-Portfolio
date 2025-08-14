@@ -1,7 +1,7 @@
 "use client"
 
-import React, { useState } from "react"
-import { ExternalLink, Github, Eye, ChevronLeft, ChevronRight, Calendar, Clock } from "lucide-react"
+import React, { useState, useEffect, useMemo } from "react"
+import { ExternalLink, Github, Eye, ChevronLeft, ChevronRight, Calendar, Clock, Image as ImageIcon } from "lucide-react"
 import { Button } from "@/components/ui/button"
 
 interface Project {
@@ -9,7 +9,7 @@ interface Project {
   title: string
   description: string
   fullDescription: string
-  image: string
+  image: string | null
   technologies: {
     name: string
     logo: string
@@ -24,80 +24,117 @@ interface Project {
 
 export default function ProjectsSection() {
   const [selectedProject, setSelectedProject] = useState<number>(0)
+  const [preloadedImages, setPreloadedImages] = useState<Set<string>>(new Set())
 
   const projects: Project[] = [
     {
       id: 1,
       title: "Gestion de Parc Informatique",
-      description: "Système complet de gestion d'inventaire IT avec tracking en temps réel",
-      fullDescription: "Application web complète développée avec Laravel Livewire permettant la gestion intégrale du parc informatique d'une entreprise.",
-      image: "/images/projects/parc-informatique.jpg",
+      description: "Application métier pour la gestion de parc informatique de SALAMA",
+      fullDescription: "Solution complète permettant de gérer l'inventaire détaillé des équipements informatiques, de suivre les interventions techniques avec historique complet et de générer des tableaux de bord statistiques avec rapports PDF.",
+      image: "/images/projects/gestion-parc-informatique.png",
       technologies: [
-        { name: "Laravel", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/laravel/laravel-plain.svg" },
-        { name: "MySQL", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original.svg" },
-        { name: "TailwindCSS", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/tailwindcss/tailwindcss-plain.svg" },
-        { name: "Alpine.js", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/alpinejs/alpinejs-original.svg" }
+        { name: "WebDev", logo: "/images/logo/webdev.png" },
+        { name: "Microsoft SQL Server", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/microsoftsqlserver/microsoftsqlserver-plain.svg" },
+        { name: "WLanguage", logo: "/images/logo/wlanguage.jpg" }
       ],
       category: "web",
-      githubUrl: "https://github.com/fidy/parc-informatique",
-      liveUrl: "https://parc-demo.fidytech.com",
-      startDate: "Jan 2024",
-      endDate: "Mar 2024",
+      startDate: "Septembre 2023",
+      endDate: "Novembre 2023",
       duration: "3 mois"
     },
     {
       id: 2,
-      title: "Système d'Évaluation SALAMA",
-      description: "Plateforme d'évaluation des performances avec analytics avancés",
-      fullDescription: "Solution développée pour SALAMA CAMMEM permettant l'évaluation multi-critères des employés avec génération automatique de rapports.",
-      image: "/images/projects/evaluation-system.jpg",
+      title: "Gestion des Budgets et Engagements",
+      description: "Application web pour la gestion des budgets et engagements.",
+      fullDescription: "Application web de gestion budgétaire et demandes d'engagement de dépenses avec module de gestion des rubriques budgétaires, factures, modes de paiement et génération de documents PDF.",
+      image: null,
+      technologies: [
+        { name: "Laravel", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/laravel/laravel-original.svg" },
+        { name: "Livewire", logo: "https://laravel-livewire.com/img/twitter.png" },
+        { name: "PHP", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/php/php-original.svg" },
+        { name: "Bootstrap", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/bootstrap/bootstrap-original.svg" },
+        { name: "MySQL", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original.svg" }
+       ],
+      category: "web",
+      startDate: "Septembre 2022",
+      endDate: "Novembre 2022",
+      duration: "2 mois"
+    },
+    {
+      id: 3,
+      title: "Gestion des Opérations Bancaires",
+      description: "Application web pour la gestion des opérations bancaires.",
+      fullDescription: "Solution complète permettant de gérer les comptes clients bancaires, de traiter les opérations financières avec mise à jour automatique des soldes et de contrôler les accès utilisateurs avec système d'audit et tableaux de bord intégrés.",
+      image: "/images/projects/gestion-bancaire.png",
       technologies: [
         { name: "React", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg" },
         { name: "Node.js", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg" },
         { name: "PostgreSQL", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/postgresql/postgresql-original.svg" },
-        { name: "Express", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/express/express-original.svg" }
+        { name: "Express", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/express/express-original.svg" },
+        { name: "Tailwind CSS", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/tailwindcss/tailwindcss-original.svg" }
       ],
       category: "web",
-      githubUrl: "https://github.com/fidy/salama-evaluation",
-      startDate: "Sep 2023",
-      endDate: "Dec 2023",
-      duration: "4 mois"
-    },
-    {
-      id: 3,
-      title: "Application Web E-commerce",
-      description: "Plateforme e-commerce moderne avec gestion complète des commandes",
-      fullDescription: "Application web offrant une expérience d'achat fluide avec gestion des stocks, paiements sécurisés et tableau de bord administrateur.",
-      image: "/images/projects/ecommerce-app.jpg",
-      technologies: [
-        { name: "React", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg" },
-        { name: "Node.js", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg" },
-        { name: "MongoDB", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mongodb/mongodb-original.svg" },
-        { name: "Express", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/express/express-original.svg" }
-      ],
-      category: "web",
-      startDate: "Apr 2024",
-      endDate: "Jun 2024",
-      duration: "3 mois"
+      startDate: "Mars 2025",
+      endDate: "Avril 2025",
+      duration: "2 mois"
     },
     {
       id: 4,
-      title: "Dashboard RAN'EAU",
-      description: "Tableau de bord pour la gestion des ressources en eau",
-      fullDescription: "Interface de visualisation pour l'ONG RAN'EAU permettant le suivi en temps réel des projets d'accès à l'eau potable avec cartographie interactive.",
-      image: "/images/projects/raneau-dashboard.jpg",
+      title: " Système d'évaluation en ligne",
+      description: "Application web pour la gestion des évaluations en ligne.",
+      fullDescription: "Solution complète permettant de gérer les étudiants et leurs matières, de créer des questionnaires d'examens personnalisés et de synchroniser les données d'évaluation via API REST avec une application mobile dédiée aux étudiants.",
+      image: "/images/projects/gestion-evaluation-en-ligne.png",
       technologies: [
-        { name: "Next.js", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nextjs/nextjs-original.svg" },
-        { name: "TypeScript", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/typescript/typescript-original.svg" },
-        { name: "Prisma", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/prisma/prisma-original.svg" }
+        { name: "React", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/react/react-original.svg" },
+        { name: "Node.js", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg" },
+        { name: "MySQL", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/mysql/mysql-original.svg" },
+        { name: "Express", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/express/express-original.svg" },
+        { name: "Tailwind CSS", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/tailwindcss/tailwindcss-original.svg" }
       ],
       category: "web",
-      liveUrl: "https://dashboard.raneau.org",
-      startDate: "Jun 2023",
-      endDate: "Aug 2023",
-      duration: "3 mois"
+      startDate: "Septembre 2024",
+      endDate: "Octobre 2024",
+      duration: "2 mois"
     }
   ]
+
+  // Préchargement des images au montage du composant
+  useEffect(() => {
+    const preloadImages = async () => {
+      const allImages = projects
+        .filter(p => p.image)
+        .map(p => p.image!)
+        .concat(
+          projects.flatMap(p => 
+            p.technologies.map(t => t.logo)
+          )
+        )
+
+      // Précharger les images de manière asynchrone
+      const preloadPromises = allImages.map(src => {
+        return new Promise<string>((resolve, reject) => {
+          const img = new Image()
+          img.onload = () => resolve(src)
+          img.onerror = () => reject(src)
+          img.src = src
+        })
+      })
+
+      // Marquer les images préchargées comme réussies
+      Promise.allSettled(preloadPromises).then(results => {
+        const loadedImages = new Set<string>()
+        results.forEach((result, index) => {
+          if (result.status === 'fulfilled') {
+            loadedImages.add(allImages[index])
+          }
+        })
+        setPreloadedImages(loadedImages)
+      })
+    }
+
+    preloadImages()
+  }, [])
 
   const currentProject = projects[selectedProject] || projects[0]
 
@@ -109,8 +146,115 @@ export default function ProjectsSection() {
     setSelectedProject((prev) => (prev - 1 + projects.length) % projects.length)
   }
 
+  // Composant optimisé pour l'affichage d'image
+  const ProjectImage = ({ project }: { project: Project }) => {
+    const [imageError, setImageError] = useState(false)
+    const [imageLoaded, setImageLoaded] = useState(false)
+
+    // Vérifier si l'image est préchargée
+    const isPreloaded = project.image && preloadedImages.has(project.image)
+
+    useEffect(() => {
+      if (isPreloaded) {
+        setImageLoaded(true)
+      }
+    }, [isPreloaded])
+
+    if (!project.image || imageError) {
+      return (
+        <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-blue-100/80 via-violet-100/60 to-purple-100/40 dark:from-blue-950/60 dark:via-violet-950/40 dark:to-purple-950/30">
+          <div className="p-6 text-center">
+            <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-blue-500/20 to-violet-500/20 dark:from-blue-400/30 dark:to-violet-400/30 rounded-full flex items-center justify-center">
+              <ImageIcon className="w-10 h-10 text-blue-600 dark:text-blue-400" />
+            </div>
+            <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2">
+              {project.title}
+            </h3>
+            <p className="text-sm text-gray-600 dark:text-gray-400 max-w-xs">
+              Aperçu non disponible
+            </p>
+            <div className="mt-4 flex justify-center space-x-1">
+              <div className="w-2 h-2 bg-blue-400 dark:bg-blue-500 rounded-full opacity-60"></div>
+              <div className="w-2 h-2 bg-violet-400 dark:bg-violet-500 rounded-full opacity-40"></div>
+              <div className="w-2 h-2 bg-purple-400 dark:bg-purple-500 rounded-full opacity-60"></div>
+            </div>
+          </div>
+        </div>
+      )
+    }
+
+    return (
+      <div className="relative w-full h-full bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-gray-800 dark:via-gray-900 dark:to-gray-950">
+        {/* Loading placeholder optimisé */}
+        {!imageLoaded && (
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-100/80 via-violet-100/60 to-purple-100/40 dark:from-blue-950/60 dark:via-violet-950/40 dark:to-purple-950/30 flex items-center justify-center">
+            <div className="flex flex-col items-center gap-3">
+              <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 dark:border-blue-400"></div>
+              <div className="text-xs text-gray-600 dark:text-gray-400">
+                Chargement...
+              </div>
+            </div>
+          </div>
+        )}
+        
+        <img
+          src={project.image}
+          alt={`Capture d'écran - ${project.title}`}
+          className={`w-full h-full object-contain object-center transition-opacity duration-500 ${
+            imageLoaded ? 'opacity-100' : 'opacity-0'
+          }`}
+          onLoad={() => setImageLoaded(true)}
+          onError={() => setImageError(true)}
+          loading="lazy"
+          decoding="async"
+        />
+      </div>
+    )
+  }
+
+  // Composant optimisé pour les logos de technologies
+  const TechnologyIcon = ({ tech }: { tech: { name: string; logo: string } }) => {
+    const [imageError, setImageError] = useState(false)
+    const isPreloaded = preloadedImages.has(tech.logo)
+
+    if (imageError || !isPreloaded) {
+      return (
+        <div 
+          className="w-10 h-10 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border border-white/40 dark:border-gray-800/40 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105 flex items-center justify-center group relative"
+          title={tech.name}
+        >
+          <div className="w-6 h-6 bg-gradient-to-br from-blue-500 to-violet-500 rounded text-white text-xs flex items-center justify-center font-bold">
+            {tech.name.charAt(0)}
+          </div>
+          <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-10">
+            {tech.name}
+          </div>
+        </div>
+      )
+    }
+
+    return (
+      <div
+        className="w-10 h-10 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border border-white/40 dark:border-gray-800/40 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105 flex items-center justify-center group relative"
+        title={tech.name}
+      >
+        <img
+          src={tech.logo}
+          alt={tech.name}
+          className="w-6 h-6 object-contain"
+          loading="lazy"
+          decoding="async"
+          onError={() => setImageError(true)}
+        />
+        <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none z-10">
+          {tech.name}
+        </div>
+      </div>
+    )
+  }
+
   return (
-    <section id="projets" className="h-screen flex flex-col overflow-hidden bg-gradient-to-br from-blue-50/30 via-gray-50/50 to-white dark:from-blue-950/20 dark:via-gray-900/50 dark:to-gray-950 relative pt-4">
+    <section id="projets" className="h-screen flex flex-col overflow-hidden bg-gradient-to-br from-white via-gray-50/50 to-blue-50/30 dark:from-blue-950/20 dark:via-gray-900/50 dark:to-gray-950 relative pt-4">
       
       {/* Background Elements */}
       <div className="absolute inset-0 pointer-events-none">
@@ -119,9 +263,7 @@ export default function ProjectsSection() {
       </div>
 
       {/* Header */}
-      <div className="text-center pt-20 pb-4 px-4">
-
-        
+      <div className="text-center pt-20 pb-4 px-4">        
         <h1 className="text-2xl lg:text-3xl font-bold mb-2 tracking-tight">
           <span className="bg-gradient-to-r from-blue-600 via-violet-600 to-purple-600 dark:from-blue-400 dark:via-violet-400 dark:to-purple-400 bg-clip-text text-transparent">
             Mes Projets
@@ -140,49 +282,7 @@ export default function ProjectsSection() {
             {/* Left: Project Image */}
             <div className="relative group h-full max-h-96">
               <div className="relative h-full rounded-xl overflow-hidden shadow-2xl bg-gradient-to-br from-blue-100 to-violet-100 dark:from-blue-950/50 dark:to-violet-950/50">
-                <div className="absolute inset-0">
-                  <img
-                    src={currentProject.image}
-                    alt={`Capture d'écran - ${currentProject.title}`}
-                    className="w-full h-full object-cover"
-                    onError={(e) => {
-                      const target = e.target as HTMLImageElement;
-                      target.style.display = 'none';
-                      const parent = target.parentElement;
-                      if (parent) {
-                        parent.innerHTML = `
-                          <div class="absolute inset-0 bg-gradient-to-br from-blue-400/20 via-violet-400/20 to-purple-400/20 dark:from-blue-600/30 dark:via-violet-600/30 dark:to-purple-600/30"></div>
-                          <div class="absolute inset-4 bg-white/95 dark:bg-gray-900/95 rounded-lg shadow-lg backdrop-blur-sm">
-                            <div class="flex items-center gap-2 p-3 bg-gray-100/80 dark:bg-gray-800/80 rounded-t-lg border-b border-gray-200/50 dark:border-gray-700/50">
-                              <div class="flex gap-1.5">
-                                <div class="w-2.5 h-2.5 rounded-full bg-red-400"></div>
-                                <div class="w-2.5 h-2.5 rounded-full bg-yellow-400"></div>
-                                <div class="w-2.5 h-2.5 rounded-full bg-green-400"></div>
-                              </div>
-                              <div class="flex-1 mx-3">
-                                <div class="h-4 bg-gray-200/80 dark:bg-gray-700/80 rounded-full"></div>
-                              </div>
-                            </div>
-                            <div class="p-4 space-y-3">
-                              <div class="flex items-center gap-3">
-                                <div class="w-8 h-8 bg-gradient-to-br from-blue-500 to-violet-500 rounded-lg"></div>
-                                <div class="flex-1 space-y-1">
-                                  <div class="h-3 bg-gray-200/80 dark:bg-gray-700/80 rounded-full w-3/4"></div>
-                                  <div class="h-2 bg-gray-200/60 dark:bg-gray-700/60 rounded-full w-1/2"></div>
-                                </div>
-                              </div>
-                              <div class="grid grid-cols-3 gap-2">
-                                <div class="h-12 bg-gradient-to-br from-blue-100 to-blue-200 dark:from-blue-900/50 dark:to-blue-800/50 rounded-lg"></div>
-                                <div class="h-12 bg-gradient-to-br from-violet-100 to-violet-200 dark:from-violet-900/50 dark:to-violet-800/50 rounded-lg"></div>
-                                <div class="h-12 bg-gradient-to-br from-purple-100 to-purple-200 dark:from-purple-900/50 dark:to-purple-800/50 rounded-lg"></div>
-                              </div>
-                            </div>
-                          </div>
-                        `;
-                      }
-                    }}
-                  />
-                </div>
+                <ProjectImage project={currentProject} />
                 
                 <div className="absolute inset-0 bg-gradient-to-br from-blue-600/10 via-violet-600/10 to-purple-600/10 opacity-0 group-hover:opacity-100 transition-all duration-500"></div>
               </div>
@@ -240,29 +340,7 @@ export default function ProjectsSection() {
                 </h3>
                 <div className="flex flex-wrap gap-2">
                   {currentProject.technologies.map((tech) => (
-                    <div
-                      key={tech.name}
-                      className="w-10 h-10 bg-white/80 dark:bg-gray-900/80 backdrop-blur-sm border border-white/40 dark:border-gray-800/40 rounded-lg shadow-md hover:shadow-lg transition-all duration-300 hover:scale-105 flex items-center justify-center group relative"
-                      title={tech.name}
-                    >
-                      <img
-                        src={tech.logo}
-                        alt={tech.name}
-                        className="w-6 h-6 object-contain"
-                        onError={(e) => {
-                          const target = e.target as HTMLImageElement;
-                          target.style.display = 'none';
-                          const parent = target.parentElement;
-                          if (parent) {
-                            parent.innerHTML = `<div class="w-6 h-6 bg-gradient-to-br from-blue-500 to-violet-500 rounded text-white text-xs flex items-center justify-center font-bold">${tech.name.charAt(0)}</div>`;
-                          }
-                        }}
-                      />
-                      {/* Tooltip */}
-                      <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-gray-900 dark:bg-gray-100 text-white dark:text-gray-900 text-xs px-2 py-1 rounded opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap pointer-events-none">
-                        {tech.name}
-                      </div>
-                    </div>
+                    <TechnologyIcon key={tech.name} tech={tech} />
                   ))}
                 </div>
               </div>
@@ -314,6 +392,14 @@ export default function ProjectsSection() {
                   ))}
                 </div>
               </div>
+
+              {/* Indicateur de préchargement */}
+              {preloadedImages.size < projects.length && (
+                <div className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-2">
+                  <div className="w-3 h-3 border border-gray-400 border-t-transparent rounded-full animate-spin"></div>
+                  Optimisation en cours... {preloadedImages.size}/{projects.length + projects.flatMap(p => p.technologies).length}
+                </div>
+              )}
             </div>
           </div>
         </div>

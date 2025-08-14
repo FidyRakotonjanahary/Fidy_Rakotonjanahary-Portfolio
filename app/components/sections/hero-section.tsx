@@ -73,7 +73,8 @@ export function HeroSection() {
               className="text-4xl sm:text-5xl lg:text-6xl font-bold mb-6 tracking-tight leading-tight"
             >
               <span className="bg-gradient-to-r from-blue-600 via-violet-600 to-purple-600 dark:from-blue-400 dark:via-violet-400 dark:to-purple-400 bg-clip-text text-transparent relative">
-                Développeur Web
+                Développeur
+    Full-Stack
                 <div className="absolute -bottom-1 left-0 w-20 h-1 bg-gradient-to-r from-blue-500 to-violet-500 rounded-full"></div>
               </span>
             </motion.h1>
