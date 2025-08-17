@@ -25,7 +25,7 @@ export default function SkillsPage(): React.JSX.Element {
     { name: "TailwindCSS", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/tailwindcss/tailwindcss-original.svg", category: "frontend" },
     { name: "JavaScript", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/javascript/javascript-original.svg", category: "frontend" },
     { name: "Node.js", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/nodejs/nodejs-original.svg", category: "backend" },
-    { name: "Laravel Livewire", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/livewire/livewire-original.svg", category: "frontend"},
+    { name: "Laravel Livewire", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/livewire/livewire-original.svg", category: "backend"},
     { name: "PHP", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/php/php-original.svg", category: "backend" },
     { name: "Express", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/express/express-original.svg", category: "backend" },
     { name: "PostgreSQL", logo: "https://cdn.jsdelivr.net/gh/devicons/devicon/icons/postgresql/postgresql-original.svg", category: "database" },
