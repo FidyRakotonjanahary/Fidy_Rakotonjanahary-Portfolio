@@ -13,6 +13,7 @@ import {
   ExternalLink,
   Contact
 } from "lucide-react"
+import emailjs from '@emailjs/browser'
 
 interface FormData {
   name: string
@@ -104,18 +105,38 @@ export default function ContactSection() {
 
   const handleSubmit = async () => {
     if (!validateForm()) return
-
+  
     setIsSubmitting(true)
     setSubmitStatus('idle')
-
-    // Simulation d'envoi
-    setTimeout(() => {
+  
+    try {
+      // Configuration EmailJS
+      const serviceId = process.env.NEXT_PUBLIC_EMAILJS_SERVICE_ID!
+      const templateId = process.env.NEXT_PUBLIC_EMAILJS_TEMPLATE_ID!
+      const publicKey = process.env.NEXT_PUBLIC_EMAILJS_PUBLIC_KEY!
+  
+      // Paramètres du template
+      const templateParams = {
+        from_name: formData.name,
+        from_email: formData.email,
+        message: formData.message,
+        to_name: 'Fidy',
+      }
+  
+      // Envoi avec EmailJS
+      await emailjs.send(serviceId, templateId, templateParams, publicKey)
+      
       setSubmitStatus('success')
       setFormData({ name: "", email: "", message: "" })
       setErrors({})
-      setIsSubmitting(false)
       setTimeout(() => setSubmitStatus('idle'), 5000)
-    }, 2000)
+  
+    } catch (error) {
+      console.error('Erreur EmailJS:', error)
+      setSubmitStatus('error')
+    } finally {
+      setIsSubmitting(false)
+    }
   }
 
   const handleInputChange = (field: keyof FormData, value: string) => {
