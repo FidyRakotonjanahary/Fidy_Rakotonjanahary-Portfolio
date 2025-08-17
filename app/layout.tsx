@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import { ThemeProvider } from "./providers/theme-provider";
 import "./globals.css";
@@ -20,7 +20,6 @@ export const metadata: Metadata = {
   authors: [{ name: "RAKOTONJANAHARY Andrianofidiniaina Jeannot" }],
   creator: "RAKOTONJANAHARY Andrianofidiniaina Jeannot",
   
-
   icons: {
     icon: '/favicon.ico',
     apple: '/apple-touch-icon.png', 
@@ -37,16 +36,14 @@ export const metadata: Metadata = {
       'max-snippet': -1,
     },
   },
-  
-  // 📱 RESPONSIVE 
-  viewport: {
-    width: 'device-width',
-    initialScale: 1,
-    // maximumScale retiré pour permettre le zoom accessibilité
-  },
-  
-  // 🎨 MOBILE THEME (NICE TO HAVE)
+};
+
+// ✅ NOUVELLE EXPORT SÉPARÉE POUR VIEWPORT
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
   themeColor: '#6366F1',
+  // maximumScale retiré pour permettre le zoom accessibilité
 };
 
 export default function RootLayout({

@@ -1,8 +1,7 @@
 "use client"
 
-import React, { useState, useEffect, useMemo } from "react"
-import { ExternalLink, Github, Eye, ChevronLeft, ChevronRight, Calendar, Clock, Image as ImageIcon } from "lucide-react"
-import { Button } from "@/components/ui/button"
+import React, { useState, useEffect, useCallback } from "react"
+import { ExternalLink, Github, Eye, ChevronLeft, ChevronRight, Calendar, Clock, Image, X, ZoomIn } from "lucide-react"
 
 interface Project {
   id: number
@@ -25,6 +24,8 @@ interface Project {
 export default function ProjectsSection() {
   const [selectedProject, setSelectedProject] = useState<number>(0)
   const [preloadedImages, setPreloadedImages] = useState<Set<string>>(new Set())
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const [modalImage, setModalImage] = useState<string | null>(null)
 
   const projects: Project[] = [
     {
@@ -99,6 +100,19 @@ export default function ProjectsSection() {
     }
   ]
 
+  // Utilisation de useCallback pour éviter les re-créations de fonction
+  const closeModal = useCallback(() => {
+    console.log("Closing modal")
+    setIsModalOpen(false)
+    setModalImage(null)
+  }, [])
+
+  const openModal = useCallback((imageSrc: string) => {
+    console.log("Opening modal with image:", imageSrc)
+    setModalImage(imageSrc)
+    setIsModalOpen(true)
+  }, [])
+
   // Préchargement des images au montage du composant
   useEffect(() => {
     const preloadImages = async () => {
@@ -111,17 +125,16 @@ export default function ProjectsSection() {
           )
         )
 
-      // Précharger les images de manière asynchrone
       const preloadPromises = allImages.map(src => {
         return new Promise<string>((resolve, reject) => {
-          const img = new Image()
+          // ✅ CORRECTION: Utilisation de window.Image() au lieu de new Image()
+          const img = new window.Image()
           img.onload = () => resolve(src)
           img.onerror = () => reject(src)
           img.src = src
         })
       })
 
-      // Marquer les images préchargées comme réussies
       Promise.allSettled(preloadPromises).then(results => {
         const loadedImages = new Set<string>()
         results.forEach((result, index) => {
@@ -136,6 +149,27 @@ export default function ProjectsSection() {
     preloadImages()
   }, [])
 
+  // Gestion des touches clavier pour le modal - CORRIGÉ
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === 'Escape') {
+        closeModal()
+      }
+    }
+
+    if (isModalOpen) {
+      document.addEventListener('keydown', handleKeyDown)
+      // Empêcher le scroll en arrière-plan
+      const originalStyle = window.getComputedStyle(document.body).overflow
+      document.body.style.overflow = 'hidden'
+      
+      return () => {
+        document.removeEventListener('keydown', handleKeyDown)
+        document.body.style.overflow = originalStyle
+      }
+    }
+  }, [isModalOpen, closeModal])
+
   const currentProject = projects[selectedProject] || projects[0]
 
   const nextProject = () => {
@@ -146,12 +180,55 @@ export default function ProjectsSection() {
     setSelectedProject((prev) => (prev - 1 + projects.length) % projects.length)
   }
 
-  // Composant optimisé pour l'affichage d'image
+  // Composant Modal en plein écran - AMÉLIORÉ
+  const ImageModal = () => {
+    if (!isModalOpen || !modalImage) return null
+
+    return (
+      <>
+        {/* Overlay background */}
+        <div 
+          className="fixed inset-0 bg-black/95 backdrop-blur-sm flex items-center justify-center p-4"
+          style={{ zIndex: 999999 }} // Z-index très élevé
+          onClick={closeModal}
+        >
+          <div className="relative max-w-7xl max-h-full w-full h-full flex items-center justify-center">
+            {/* Bouton fermer - TOUJOURS VISIBLE */}
+            <button
+              onClick={(e) => {
+                e.stopPropagation()
+                closeModal()
+              }}
+              className="fixed top-4 right-4 z-[999999] p-3 bg-black/50 hover:bg-black/70 backdrop-blur-sm rounded-full transition-all duration-300 group border border-white/20"
+              aria-label="Fermer le modal"
+            >
+              <X className="h-6 w-6 text-white group-hover:scale-110 transition-transform" />
+            </button>
+
+            {/* Image en plein écran */}
+            <div className="relative max-w-full max-h-full">
+              <img
+                src={modalImage}
+                alt={`${currentProject.title} - Vue agrandie`}
+                className="max-w-full max-h-full object-contain rounded-lg shadow-2xl"
+                onClick={(e) => e.stopPropagation()}
+                onError={(e) => {
+                  console.error("Erreur de chargement de l'image modal:", modalImage)
+                  closeModal()
+                }}
+              />
+            </div>
+          </div>
+        </div>
+      </>
+    )
+  }
+
+  // Composant optimisé pour l'affichage d'image - AMÉLIORÉ
   const ProjectImage = ({ project }: { project: Project }) => {
     const [imageError, setImageError] = useState(false)
     const [imageLoaded, setImageLoaded] = useState(false)
 
-    // Vérifier si l'image est préchargée
     const isPreloaded = project.image && preloadedImages.has(project.image)
 
     useEffect(() => {
@@ -160,12 +237,26 @@ export default function ProjectsSection() {
       }
     }, [isPreloaded])
 
+    const handleImageClick = (e: React.MouseEvent) => {
+      e.preventDefault()
+      e.stopPropagation()
+      
+      console.log("handleImageClick called for:", project.image)
+      
+      if (project.image && !imageError) {
+        console.log("Image clicked, opening modal with:", project.image)
+        openModal(project.image)
+      } else {
+        console.log("Cannot open modal - image error or no image")
+      }
+    }
+
     if (!project.image || imageError) {
       return (
         <div className="w-full h-full flex flex-col items-center justify-center bg-gradient-to-br from-blue-100/80 via-violet-100/60 to-purple-100/40 dark:from-blue-950/60 dark:via-violet-950/40 dark:to-purple-950/30">
           <div className="p-6 text-center">
             <div className="w-20 h-20 mx-auto mb-4 bg-gradient-to-br from-blue-500/20 to-violet-500/20 dark:from-blue-400/30 dark:to-violet-400/30 rounded-full flex items-center justify-center">
-              <ImageIcon className="w-10 h-10 text-blue-600 dark:text-blue-400" />
+              <Image className="w-10 h-10 text-blue-600 dark:text-blue-400" />
             </div>
             <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2">
               {project.title}
@@ -184,10 +275,27 @@ export default function ProjectsSection() {
     }
 
     return (
-      <div className="relative w-full h-full bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-gray-800 dark:via-gray-900 dark:to-gray-950">
-        {/* Loading placeholder optimisé */}
+      <div className="relative w-full h-full bg-gradient-to-br from-gray-50 via-white to-gray-100 dark:from-gray-800 dark:via-gray-900 dark:to-gray-950 group">
+        
+        {/* Zone cliquable PRINCIPALE qui couvre tout */}
+        <div 
+          className="absolute inset-0 cursor-pointer z-20"
+          onClick={(e) => {
+            // Vérifier si le clic n'est pas sur un bouton de navigation
+            const target = e.target as HTMLElement
+            const isNavigationButton = target.closest('button')
+            
+            if (!isNavigationButton) {
+              handleImageClick(e)
+            }
+          }}
+          onMouseDown={(e) => console.log("Mouse down on clickable area")}
+        >
+        </div>
+
+        {/* Loading placeholder */}
         {!imageLoaded && (
-          <div className="absolute inset-0 bg-gradient-to-br from-blue-100/80 via-violet-100/60 to-purple-100/40 dark:from-blue-950/60 dark:via-violet-950/40 dark:to-purple-950/30 flex items-center justify-center">
+          <div className="absolute inset-0 bg-gradient-to-br from-blue-100/80 via-violet-100/60 to-purple-100/40 dark:from-blue-950/60 dark:via-violet-950/40 dark:to-purple-950/30 flex items-center justify-center z-10">
             <div className="flex flex-col items-center gap-3">
               <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600 dark:border-blue-400"></div>
               <div className="text-xs text-gray-600 dark:text-gray-400">
@@ -200,14 +308,36 @@ export default function ProjectsSection() {
         <img
           src={project.image}
           alt={`Capture d'écran - ${project.title}`}
-          className={`w-full h-full object-contain object-center transition-opacity duration-500 ${
+          className={`w-full h-full object-contain object-center transition-all duration-500 group-hover:scale-105 ${
             imageLoaded ? 'opacity-100' : 'opacity-0'
           }`}
-          onLoad={() => setImageLoaded(true)}
-          onError={() => setImageError(true)}
+          onLoad={() => {
+            console.log("Image loaded successfully:", project.image)
+            setImageLoaded(true)
+          }}
+          onError={(e) => {
+            console.error("Erreur de chargement de l'image:", project.image)
+            setImageError(true)
+          }}
           loading="lazy"
           decoding="async"
         />
+
+        {/* Overlay avec icône zoom au hover */}
+        <div className="absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-all duration-300 flex items-center justify-center pointer-events-none z-20">
+          <div className="opacity-0 group-hover:opacity-100 transition-all duration-300 transform scale-75 group-hover:scale-100">
+            <div className="bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm rounded-full p-3 shadow-lg">
+              <ZoomIn className="h-6 w-6 text-gray-700 dark:text-gray-300" />
+            </div>
+          </div>
+        </div>
+
+        {/* Indication cliquable */}
+        <div className="absolute top-2 right-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none z-30">
+          <div className="bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm rounded-full px-3 py-1 text-xs text-gray-700 dark:text-gray-300 font-medium">
+            Cliquer pour agrandir
+          </div>
+        </div>
       </div>
     )
   }
@@ -254,156 +384,164 @@ export default function ProjectsSection() {
   }
 
   return (
-    <section id="projets" className="h-screen flex flex-col overflow-hidden bg-gradient-to-br from-white via-gray-50/50 to-blue-50/30 dark:from-blue-950/20 dark:via-gray-900/50 dark:to-gray-950 relative pt-4">
-      
-      {/* Background Elements */}
-      <div className="absolute inset-0 pointer-events-none">
-        <div className="absolute top-0 left-0 w-48 h-48 bg-gradient-to-br from-violet-100/30 via-blue-50/15 to-transparent dark:from-violet-900/15 dark:via-blue-900/8 dark:to-transparent rounded-full blur-3xl"></div>
-        <div className="absolute bottom-0 right-0 w-32 h-32 bg-gradient-to-tl from-blue-100/25 to-transparent dark:from-blue-900/12 dark:to-transparent rounded-full blur-3xl"></div>
-      </div>
+    <>
+      <section id="projets" className="h-screen flex flex-col overflow-hidden bg-gradient-to-br from-white via-gray-50/50 to-blue-50/30 dark:from-blue-950/20 dark:via-gray-900/50 dark:to-gray-950 relative pt-4">
+        
+        {/* Background Elements */}
+        <div className="absolute inset-0 pointer-events-none">
+          <div className="absolute top-0 left-0 w-48 h-48 bg-gradient-to-br from-violet-100/30 via-blue-50/15 to-transparent dark:from-violet-900/15 dark:via-blue-900/8 dark:to-transparent rounded-full blur-3xl"></div>
+          <div className="absolute bottom-0 right-0 w-32 h-32 bg-gradient-to-tl from-blue-100/25 to-transparent dark:from-blue-900/12 dark:to-transparent rounded-full blur-3xl"></div>
+        </div>
 
-      {/* Header */}
-      <div className="text-center pt-20 pb-4 px-4">        
-        <h1 className="text-2xl lg:text-3xl font-bold mb-2 tracking-tight">
-          <span className="bg-gradient-to-r from-blue-600 via-violet-600 to-purple-600 dark:from-blue-400 dark:via-violet-400 dark:to-purple-400 bg-clip-text text-transparent">
-            Mes Projets
-          </span>
-        </h1>
-        <p className="text-gray-600 dark:text-gray-300 text-sm">
-          Découvrez mes réalisations récentes
-        </p>
-      </div>
+        {/* Header */}
+        <div className="text-center pt-20 pb-4 px-4">        
+          <h1 className="text-2xl lg:text-3xl font-bold mb-2 tracking-tight">
+            <span className="bg-gradient-to-r from-blue-600 via-violet-600 to-purple-600 dark:from-blue-400 dark:via-violet-400 dark:to-purple-400 bg-clip-text text-transparent">
+              Mes Projets
+            </span>
+          </h1>
+          <p className="text-gray-600 dark:text-gray-300 text-sm">
+            Découvrez mes réalisations récentes
+          </p>
+        </div>
 
-      {/* Main Content */}
-      <div className="flex-1 px-4 lg:px-6 pb-6">
-        <div className="max-w-6xl mx-auto h-full">
-          <div className="grid lg:grid-cols-2 gap-6 h-full items-center">
-            
-            {/* Left: Project Image */}
-            <div className="relative group h-full max-h-96">
-              <div className="relative h-full rounded-xl overflow-hidden shadow-2xl bg-gradient-to-br from-blue-100 to-violet-100 dark:from-blue-950/50 dark:to-violet-950/50">
-                <ProjectImage project={currentProject} />
-                
-                <div className="absolute inset-0 bg-gradient-to-br from-blue-600/10 via-violet-600/10 to-purple-600/10 opacity-0 group-hover:opacity-100 transition-all duration-500"></div>
-              </div>
-
-              {/* Navigation Arrows */}
-              {projects.length > 1 && (
-                <>
-                  <button
-                    onClick={prevProject}
-                    className="absolute left-2 top-1/2 -translate-y-1/2 p-2 bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 border border-white/40 dark:border-gray-800/40"
-                  >
-                    <ChevronLeft className="h-4 w-4 text-gray-700 dark:text-gray-300" />
-                  </button>
-                  <button
-                    onClick={nextProject}
-                    className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 border border-white/40 dark:border-gray-800/40"
-                  >
-                    <ChevronRight className="h-4 w-4 text-gray-700 dark:text-gray-300" />
-                  </button>
-                </>
-              )}
-            </div>
-
-            {/* Right: Project Info */}
-            <div className="space-y-4 h-full flex flex-col justify-center">
+        {/* Main Content */}
+        <div className="flex-1 px-4 lg:px-6 pb-6">
+          <div className="max-w-6xl mx-auto h-full">
+            <div className="grid lg:grid-cols-2 gap-6 h-full items-center">
               
-              {/* Project Header */}
-              <div>
-                <h2 className="text-xl lg:text-2xl font-bold text-gray-900 dark:text-white mb-2">
-                  {currentProject.title}
-                </h2>
-                <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">
-                  {currentProject.fullDescription}
-                </p>
-              </div>
-
-              {/* Timeline */}
-              <div className="bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm rounded-lg p-3 border border-white/40 dark:border-gray-800/40">
-                <div className="flex items-center justify-between text-xs">
-                  <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
-                    <Calendar className="h-3 w-3" />
-                    <span>{currentProject.startDate} - {currentProject.endDate}</span>
-                  </div>
-                  <div className="flex items-center gap-2 text-blue-600 dark:text-blue-400 font-medium">
-                    <Clock className="h-3 w-3" />
-                    <span>{currentProject.duration}</span>
-                  </div>
+              {/* Left: Project Image */}
+              <div className="relative group h-full max-h-96">
+                <div className="relative h-full rounded-xl overflow-hidden shadow-2xl bg-gradient-to-br from-blue-100 to-violet-100 dark:from-blue-950/50 dark:to-violet-950/50">
+                  <ProjectImage project={currentProject} />
+                  
+                  <div className="absolute inset-0 bg-gradient-to-br from-blue-600/10 via-violet-600/10 to-purple-600/10 opacity-0 group-hover:opacity-100 transition-all duration-500"></div>
                 </div>
-              </div>
 
-              {/* Technologies */}
-              <div>
-                <h3 className="text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider mb-2">
-                  Technologies
-                </h3>
-                <div className="flex flex-wrap gap-2">
-                  {currentProject.technologies.map((tech) => (
-                    <TechnologyIcon key={tech.name} tech={tech} />
-                  ))}
-                </div>
-              </div>
-
-              {/* Action Buttons */}
-              <div className="flex flex-wrap gap-2">
-                {currentProject.liveUrl && (
-                  <Button 
-                    size="sm"
-                    className="bg-gradient-to-r from-blue-600 to-violet-600 hover:from-blue-700 hover:to-violet-700 text-white border-0 shadow-lg hover:shadow-xl transition-all duration-300 group text-xs"
-                    onClick={() => window.open(currentProject.liveUrl, '_blank')}
-                  >
-                    <Eye className="h-3 w-3 mr-1 group-hover:scale-110 transition-transform" />
-                    Voir le projet
-                    <ExternalLink className="h-3 w-3 ml-1 opacity-70" />
-                  </Button>
-                )}
-                
-                {currentProject.githubUrl && (
-                  <Button 
-                    size="sm"
-                    variant="outline"
-                    className="border border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800/50 transition-all duration-300 text-xs"
-                    onClick={() => window.open(currentProject.githubUrl, '_blank')}
-                  >
-                    <Github className="h-3 w-3 mr-1" />
-                    Code source
-                    <ExternalLink className="h-3 w-3 ml-1 opacity-70" />
-                  </Button>
-                )}
-              </div>
-
-              {/* Project Counter */}
-              <div className="flex items-center gap-4 pt-2">
-                <span className="text-xs text-gray-500 dark:text-gray-400">
-                  {selectedProject + 1} / {projects.length}
-                </span>
-                <div className="flex gap-1">
-                  {projects.map((_, index) => (
+                {/* Navigation Arrows */}
+                {projects.length > 1 && (
+                  <>
                     <button
-                      key={index}
-                      onClick={() => setSelectedProject(index)}
-                      className={`h-1.5 rounded-full transition-all duration-300 ${
-                        index === selectedProject 
-                          ? 'bg-blue-600 dark:bg-blue-400 w-6' 
-                          : 'bg-gray-300 dark:bg-gray-600 hover:bg-gray-400 dark:hover:bg-gray-500 w-1.5'
-                      }`}
-                    />
-                  ))}
-                </div>
+                      onClick={(e) => {
+                        e.preventDefault()
+                        e.stopPropagation()
+                        console.log("Previous button clicked")
+                        prevProject()
+                      }}
+                      className="absolute left-2 top-1/2 -translate-y-1/2 p-2 bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 border border-white/40 dark:border-gray-800/40 z-30"
+                    >
+                      <ChevronLeft className="h-4 w-4 text-gray-700 dark:text-gray-300" />
+                    </button>
+                    <button
+                      onClick={(e) => {
+                        e.preventDefault()
+                        e.stopPropagation()
+                        console.log("Next button clicked")
+                        nextProject()
+                      }}
+                      className="absolute right-2 top-1/2 -translate-y-1/2 p-2 bg-white/90 dark:bg-gray-900/90 backdrop-blur-sm rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 border border-white/40 dark:border-gray-800/40 z-30"
+                    >
+                      <ChevronRight className="h-4 w-4 text-gray-700 dark:text-gray-300" />
+                    </button>
+                  </>
+                )}
               </div>
 
-              {/* Indicateur de préchargement */}
-              {preloadedImages.size < projects.length && (
-                <div className="text-xs text-gray-500 dark:text-gray-400 flex items-center gap-2">
-                  <div className="w-3 h-3 border border-gray-400 border-t-transparent rounded-full animate-spin"></div>
-                  Optimisation en cours... {preloadedImages.size}/{projects.length + projects.flatMap(p => p.technologies).length}
+              {/* Right: Project Info */}
+              <div className="space-y-4 h-full flex flex-col justify-center">
+                
+                {/* Project Header */}
+                <div>
+                  <h2 className="text-xl lg:text-2xl font-bold text-gray-900 dark:text-white mb-2">
+                    {currentProject.title}
+                  </h2>
+                  <p className="text-gray-600 dark:text-gray-300 text-sm leading-relaxed">
+                    {currentProject.fullDescription}
+                  </p>
                 </div>
-              )}
+
+                {/* Timeline */}
+                <div className="bg-white/50 dark:bg-gray-900/50 backdrop-blur-sm rounded-lg p-3 border border-white/40 dark:border-gray-800/40">
+                  <div className="flex items-center justify-between text-xs">
+                    <div className="flex items-center gap-2 text-gray-600 dark:text-gray-400">
+                      <Calendar className="h-3 w-3" />
+                      <span>{currentProject.startDate} - {currentProject.endDate}</span>
+                    </div>
+                    <div className="flex items-center gap-2 text-blue-600 dark:text-blue-400 font-medium">
+                      <Clock className="h-3 w-3" />
+                      <span>{currentProject.duration}</span>
+                    </div>
+                  </div>
+                </div>
+
+                {/* Technologies */}
+                <div>
+                  <h3 className="text-xs font-semibold text-gray-700 dark:text-gray-300 uppercase tracking-wider mb-2">
+                    Technologies
+                  </h3>
+                  <div className="flex flex-wrap gap-2">
+                    {currentProject.technologies.map((tech) => (
+                      <TechnologyIcon key={tech.name} tech={tech} />
+                    ))}
+                  </div>
+                </div>
+
+                {/* Action Buttons */}
+                <div className="flex flex-wrap gap-2">
+                  {currentProject.liveUrl && (
+                    <button 
+                      className="px-3 py-2 bg-gradient-to-r from-blue-600 to-violet-600 hover:from-blue-700 hover:to-violet-700 text-white rounded-md shadow-lg hover:shadow-xl transition-all duration-300 group text-xs flex items-center gap-1"
+                      onClick={() => window.open(currentProject.liveUrl, '_blank')}
+                    >
+                      <Eye className="h-3 w-3 group-hover:scale-110 transition-transform" />
+                      Voir le projet
+                      <ExternalLink className="h-3 w-3 opacity-70" />
+                    </button>
+                  )}
+                  
+                  {currentProject.githubUrl && (
+                    <button 
+                      className="px-3 py-2 border border-gray-200 dark:border-gray-700 hover:border-gray-300 dark:hover:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-800/50 rounded-md transition-all duration-300 text-xs flex items-center gap-1"
+                      onClick={() => window.open(currentProject.githubUrl, '_blank')}
+                    >
+                      <Github className="h-3 w-3" />
+                      Code source
+                      <ExternalLink className="h-3 w-3 opacity-70" />
+                    </button>
+                  )}
+                </div>
+
+                {/* Project Counter */}
+                <div className="flex items-center gap-4 pt-2">
+                  <span className="text-xs text-gray-500 dark:text-gray-400">
+                    {selectedProject + 1} / {projects.length}
+                  </span>
+                  <div className="flex gap-1">
+                    {projects.map((_, index) => (
+                      <button
+                        key={index}
+                        onClick={() => setSelectedProject(index)}
+                        className={`h-1.5 rounded-full transition-all duration-300 ${
+                          index === selectedProject 
+                            ? 'bg-blue-600 dark:bg-blue-400 w-6' 
+                            : 'bg-gray-300 dark:bg-gray-600 hover:bg-gray-400 dark:hover:bg-gray-500 w-1.5'
+                        }`}
+                      />
+                    ))}
+                  </div>
+                </div>
+
+                {/* Boutons de test supprimés */}
+
+                {/* Debug info - SUPPRIMÉ */}
+              </div>
             </div>
           </div>
         </div>
-      </div>
-    </section>
+      </section>
+
+      {/* Modal en plein écran - Rendu conditionnellement */}
+      {isModalOpen && <ImageModal />}
+    </>
   )
 }
