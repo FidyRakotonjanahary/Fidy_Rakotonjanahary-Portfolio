@@ -18,20 +18,35 @@ export const metadata: Metadata = {
   description: "Portfolio professionnel de développeur full-stack",
   keywords: ["développeur", "web", "portfolio", "react", "next.js"],
   authors: [{ name: "RAKOTONJANAHARY Andrianofidiniaina Jeannot" }],
-  creator: "Votre Nom",
-  openGraph: {
-    type: "website",
-    locale: "fr_FR",
-    url: "https://votre-site.com",
-    title: "RAKOTONJANAHARY Andrianofidiniaina Jeannot - Portfolio",
-    description: "Portfolio professionnel de développeur full-stack",
-    siteName: "Portfolio",
+  creator: "RAKOTONJANAHARY Andrianofidiniaina Jeannot",
+  
+
+  icons: {
+    icon: '/favicon.ico',
+    apple: '/apple-touch-icon.png', 
   },
-  twitter: {
-    card: "summary_large_image",
-    title: "RAKOTONJANAHARY Andrianofidiniaina Jeannot - Portfolio",
-    description: "Portfolio professionnel de développeur full-stack",
+  
+  // 🤖 SEO OPTIMIZATION 
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: {
+      index: true,
+      follow: true,
+      'max-image-preview': 'large',
+      'max-snippet': -1,
+    },
   },
+  
+  // 📱 RESPONSIVE 
+  viewport: {
+    width: 'device-width',
+    initialScale: 1,
+    // maximumScale retiré pour permettre le zoom accessibilité
+  },
+  
+  // 🎨 MOBILE THEME (NICE TO HAVE)
+  themeColor: '#6366F1',
 };
 
 export default function RootLayout({
