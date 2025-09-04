@@ -10,7 +10,6 @@ export function AboutSection() {
     { icon: <Users className="h-4 w-4" />, title: "Collaboration", desc: "Méthodologies agiles" }
   ]
 
-
   return (
     <section id="apropos" className="relative min-h-screen flex items-end justify-center px-4 lg:px-6 py-8 lg:py-12 pt-24 lg:pt-32 pb-16 lg:pb-20 overflow-hidden bg-gradient-to-b from-blue-50/30 via-gray-50/50 to-white dark:from-blue-950/20 dark:via-gray-900/50 dark:to-gray-950">
       
@@ -68,7 +67,7 @@ export function AboutSection() {
                   <div className="p-1.5 lg:p-2 bg-violet-100 dark:bg-violet-950/50 rounded-lg">
                     <Calendar className="h-3 w-3 lg:h-4 lg:w-4 text-violet-600 dark:text-violet-400" />
                   </div>
-                  <span className="text-sm lg:text-base text-gray-700 dark:text-gray-300 font-medium">3+ années d'expérience</span>
+                  <span className="text-sm lg:text-base text-gray-700 dark:text-gray-300 font-medium">Projets académiques & professionnels</span>
                 </div>
                 <div className="flex items-center justify-center lg:justify-start gap-3">
                   <div className="p-1.5 lg:p-2 bg-purple-100 dark:bg-purple-950/50 rounded-lg">
@@ -87,22 +86,21 @@ export function AboutSection() {
             <div className="space-y-4 lg:space-y-6">
               <div className="space-y-3 lg:space-y-4 text-sm lg:text-base text-gray-700 dark:text-gray-300 leading-relaxed text-center lg:text-left">
                 <p>
-                  Je suis un étudiant à l'{" "}
+                  Étudiant à l'{" "}
                   <span className="font-semibold text-blue-600 dark:text-blue-400 relative">
-                  École Nationale d'Informatique
+                    École Nationale d'Informatique
                     <span className="absolute -bottom-1 left-0 right-0 h-0.5 bg-blue-400/40 rounded-full"></span>
-                  </span>, 
-                   , passionné par le{" "}
+                  </span>, je me passionne pour le{" "}
                   <span className="font-semibold text-violet-600 dark:text-violet-400 relative">
                     développement web
                     <span className="absolute -bottom-1 left-0 right-0 h-0.5 bg-violet-400/40 rounded-full"></span>
-                  </span>.
+                  </span>{" "}et les technologies modernes.
                 </p>
                 
                 <p>
-                  J'ai travaillé sur des projets variés : gestion de parc informatique, 
-                  applications bancaires, systèmes d'évaluation. Mon expérience chez SALAMA CAMMEM et 
-                  l'ONG RAN'EAU m'a permis d'allier formation académique et pratique terrain.
+                  J'ai développé une expertise pratique à travers des projets concrets : gestion de parc informatique, 
+                  applications bancaires et systèmes d'évaluation. Ces expériences chez SALAMA CAMMEM et 
+                  l'ONG RAN'EAU ont enrichi ma formation académique par une solide expérience terrain.
                 </p>
               </div>
             </div>
