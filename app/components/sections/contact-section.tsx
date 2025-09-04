@@ -65,7 +65,7 @@ export default function ContactSection() {
       icon: MapPin,
       label: "Localisation",
       value: "Anosibe, Antananarivo",
-      href: "https://maps.google.com/?q=-18.919094,47.528175",
+      href: "https://maps.google.com/?q=-18.9282859,47.5098214",
       action: "Voir sur la carte"
     }
   ]
