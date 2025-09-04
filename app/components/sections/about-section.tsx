@@ -73,7 +73,7 @@ export function AboutSection() {
                   <div className="p-1.5 lg:p-2 bg-purple-100 dark:bg-purple-950/50 rounded-lg">
                     <MapPin className="h-3 w-3 lg:h-4 lg:w-4 text-purple-600 dark:text-purple-400" />
                   </div>
-                  <span className="text-sm lg:text-base text-gray-700 dark:text-gray-300 font-medium">Antananarivo, Madagascar</span>
+                  <span className="text-sm lg:text-base text-gray-700 dark:text-gray-300 font-medium">Anosibe, Antananarivo, Madagascar</span>
                 </div>
               </div>
             </div>
