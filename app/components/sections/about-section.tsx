@@ -99,8 +99,8 @@ export function AboutSection() {
                 
                 <p>
                   J'ai développé une expertise pratique à travers des projets concrets : gestion de parc informatique, 
-                  applications bancaires et systèmes d'évaluation. Ces expériences chez SALAMA CAMMEM et 
-                  l'ONG RAN'EAU ont enrichi ma formation académique par une solide expérience terrain.
+                  applications bancaires, systèmes d'évaluation, gestion scolaire. Ces expériences chez SALAMA CAMMEM,
+                  l'ONG RAN'EAU et MyAgency ont enrichi ma formation académique par une solide expérience terrain.
                 </p>
               </div>
             </div>

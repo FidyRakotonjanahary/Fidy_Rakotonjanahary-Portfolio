@@ -1,15 +1,10 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  eslint: {
-    // Ignore ESLint errors during builds
-    ignoreDuringBuilds: true,
-  },
+  // Supprimez ou mettez à false pour activer les vérifications
   typescript: {
-    // Ignore TypeScript errors during builds (optionnel) 
-    ignoreBuildErrors: true,
+    ignoreBuildErrors: false,  // ✅ Vérifie TypeScript
   },
-  // Configuration pour les images si vous en avez
   images: {
     unoptimized: true
   }
